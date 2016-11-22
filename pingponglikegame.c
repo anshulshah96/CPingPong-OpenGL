@@ -8,7 +8,8 @@ typedef struct pingpong {
     float color[3];
 } pingpongt;
 pingpongt pp1;
-int tile_x = 100, tile_y;
+int tile1_x = 100, tile1_y;
+int tile2_x = 100, tile2_y;
 void init()
 {
     pp1.x = 100;
@@ -33,10 +34,17 @@ void display()
     glColor3fv(pp1.color);
     scanfill(pp1.x, pp1.y, 10);
     glBegin(GL_POLYGON);
-    glVertex2f(tile_x, tile_y);
-    glVertex2f(tile_x, tile_y - 20);
-    glVertex2f(tile_x + 60, tile_y - 20);
-    glVertex2f(tile_x + 60, tile_y);
+    glVertex2f(tile1_x, tile1_y);
+    glVertex2f(tile1_x, tile1_y - 20);
+    glVertex2f(tile1_x + 60, tile1_y - 20);
+    glVertex2f(tile1_x + 60, tile1_y);
+    glEnd();
+
+    glBegin(GL_POLYGON);
+    glVertex2f(tile2_x, tile2_y);
+    glVertex2f(tile2_x, tile2_y + 20);
+    glVertex2f(tile2_x + 60, tile2_y + 20);
+    glVertex2f(tile2_x + 60, tile2_y);
     glEnd();
     glutSwapBuffers();
     glFlush();
@@ -52,10 +60,31 @@ void idle()
         pp1.sy = -pp1.sy;
     glutPostRedisplay();
 }
+void keyboard(unsigned char k, int x, int y) 
+{
+    // printf("%c %d %d\n", k,x,y);
+    switch(k) 
+    {
+        case 'a'     : printf("a\n");    break;
+        case 'q'     : printf("q\n");    break;
+    }
+}
+void special_keyboard(int k, int x, int y){
+    // printf("%d %d %d\n", k,x,y);
+    switch(k) 
+    {
+        case GLUT_KEY_UP      : printf("GLUT_KEY_UP %d\n",k);       break;
+        case GLUT_KEY_DOWN    : printf("GLUT_KEY_DOWN %d\n",k);     break;
+        case GLUT_KEY_RIGHT   : printf("GLUT_KEY_UP %d\n",k);       break;
+        case GLUT_KEY_LEFT    : printf("GLUT_KEY_DOWN %d\n",k);     break;
+    }
+}
 void tile(int a, int b)
 {
-    tile_x = a;
-    tile_y = 20;
+    tile1_x = a;
+    tile1_y = 20;
+    tile2_x = a;
+    tile2_y = 480;
     glutPostRedisplay();
 }
 int main(int argc, char** argv)
@@ -68,7 +97,9 @@ int main(int argc, char** argv)
     glutDisplayFunc(display);
     glutPassiveMotionFunc(tile);
     glutIdleFunc(idle);
-    glutMouseFunc(mouse);
+    glutKeyboardFunc(keyboard);
+    glutSpecialFunc(special_keyboard);
+    // glutMouseFunc(mouse);
     init();
 
     glutMainLoop();
