@@ -7,7 +7,7 @@
 #include <sstream> 
 #include "GL/freeglut.h"
 
-// #include <GLFW/glfw3.h>
+#include "scanconvertcircle.c"
 
 using namespace std;
 
@@ -41,7 +41,7 @@ int ball_size = 8;
 int ball_speed = 5;
 
 bool winner;
-bool PLAYING = true;
+int SCREEN_FLOW = 0;
 
 string int2str(int x) 
 {
@@ -75,14 +75,23 @@ void initial()
 }
 
 void game_reset(){
-    PLAYING = true;
+    SCREEN_FLOW = 1;
     score_right = 0;
     score_left = 0;
 }
 
 void draw()
 {
-    if(PLAYING)
+    if(SCREEN_FLOW == 0)
+    {   
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glLoadIdentity();   
+        drawText(width / 2 - 10, height/2, winner?"Winner is Left":"Winner is Right"); 
+        drawText(width / 2 - 10, height/2-10, winner?"Winner is Left":"Winner is Right"); 
+        drawText(width / 2 - 10, height/2-20, winner?"Winner is Left":"Winner is Right"); 
+        glutSwapBuffers();
+    }
+    else if(SCREEN_FLOW == 1)
     {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glLoadIdentity();
@@ -90,14 +99,15 @@ void draw()
         // ToDo: draw our scene
         drawRect(racket_left_x, racket_left_y, racket_width, racket_height);
         drawRect(racket_right_x, racket_right_y, racket_width, racket_height);
-        drawRect(ball_pos_x - ball_size / 2, ball_pos_y - ball_size / 2, ball_size, ball_size);
+        // drawRect(ball_pos_x - ball_size / 2, ball_pos_y - ball_size / 2, ball_size, ball_size);
+        scanfill(ball_pos_x,ball_pos_y,ball_size);
         // draw score
         drawText(width / 2 - 10, height - 15, int2str(score_left) + ":" + int2str(score_right)); 
 
         // swap buffers (has to be done at the end)
         glutSwapBuffers();
     }
-    else{
+    else if(SCREEN_FLOW == 2){
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glLoadIdentity();   
         drawText(width / 2 - 10, height/2, winner?"Winner is Left":"Winner is Right"); 
@@ -120,27 +130,22 @@ void vec2_norm(float& x, float &y)
 void keyboard(unsigned char k, int x, int y) 
 {
     // printf("%c %d %d\n", k,x,y);
-    if(!PLAYING) game_reset();
+    if(SCREEN_FLOW != 1) game_reset();
     switch(k)  
     {
         case 'w'     : if(racket_left_y + racket_height < height) racket_left_y += racket_speed;   break;
         case 's'     : if(racket_left_y > 0)  racket_left_y -= racket_speed;    break;
-        // case 'i'     : racket_right_y += racket_speed;  break;
-        // case 'k'     : racket_right_y -= racket_speed;  break;
     }
 }
 void special_keyboard(int k, int x, int y){
     // printf("%d %d %d\n", k,x,y);
-    if(!PLAYING) game_reset();
+    if(SCREEN_FLOW != 1) game_reset();
     switch(k) 
     {
         case GLUT_KEY_UP      : if(racket_right_y + racket_height < height) racket_right_y += racket_speed;       break;
         case GLUT_KEY_DOWN    : if(racket_right_y > 0) racket_right_y -= racket_speed;    break;
-        // case GLUT_KEY_RIGHT   : printf("GLUT_KEY_UP %d\n",k);       break;
-        // case GLUT_KEY_LEFT    : printf("GLUT_KEY_DOWN %d\n",k);     break;
     }
 }
-
 void updateBall() 
 {
     // fly a bit
@@ -203,30 +208,17 @@ void updateBall()
     vec2_norm(ball_dir_x, ball_dir_y);
 }
 
-
-void draw2(){
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glLoadIdentity();
-
-    // draw score
-    drawText(width / 2 - 10, height - 15, winner?"winner is Left":"winner is right"); 
-
-    // swap buffers (has to be done at the end)
-    glutSwapBuffers();
-}
-
-
 void update(int value) 
 {
     // update ball
-    if(PLAYING) updateBall();
+    if(SCREEN_FLOW == 1) updateBall();
 
     // Call update() again in 'interval' milliseconds
     glutTimerFunc(interval, update, 0);
 
     if(score_left==MAX_SCORE || score_right==MAX_SCORE)
     {
-        PLAYING = false;
+        SCREEN_FLOW = 2;
         if(score_right == MAX_SCORE) winner=false;
         else winner = true;
     }
@@ -246,17 +238,6 @@ void enable2D(int width, int height)
 
 int main(int argc, char** argv)
 {
-    // glutInit(&argc, argv);    
-    // glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB);             // Initialize GLUT
-    // glutInitWindowPosition(200, 100); // Position the window's initial top-left corner
-    // glutInitWindowSize(640, 480);   // Set the window's initial width & height
-    // glutCreateWindow("Ping Pong Game"); // Create a window with the given title
-    // initial();
-    // glutDisplayFunc(draw); // Register display callback handler for window re-paint
-    // glutTimerFunc(interval, update, 0);
-    // glutMainLoop();           // Enter the infinitely event-processing loop
-
-
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
     glutInitWindowPosition(200, 100); 

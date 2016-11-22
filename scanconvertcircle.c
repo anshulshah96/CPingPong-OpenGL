@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <GL/glut.h>
 
+const int SCREEN_WIDTH = 1000;
+
 void edgedetect(int x, int y, int xC, int yC, int* le, int* re)
 {
     int x1, y1, x2, y2, x3, y3, x4, y4, x5, y5, x6, y6, x7, y7, x8, y8;
@@ -84,15 +86,15 @@ void Circle(int Radius, int xC, int yC, int le[], int re[])
 }
 void scanfill(int x1, int y1, int r)
 {
-    int le[500], re[500];
+    int le[SCREEN_WIDTH], re[SCREEN_WIDTH];
     int i, y;
-    for (i = 0; i < 500; i++) // initialize le and re array values
+    for (i = 0; i < SCREEN_WIDTH; i++) // initialize le and re array values
     {
-        le[i] = 500;
+        le[i] = SCREEN_WIDTH;
         re[i] = 0;
     }
     Circle(r, x1, y1, le, re);
-    for (y = 0; y < 500; y++) // for every scan line with value y
+    for (y = 0; y < SCREEN_WIDTH; y++) // for every scan line with value y
     {
         if (le[y] <= re[y]) // refer to le and re arrays to see if a part
             for (i = le[y] + 1; i < re[y]; i++) // of the scanline is inside polygon
