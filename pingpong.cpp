@@ -85,10 +85,13 @@ void draw()
     if(SCREEN_FLOW == 0)
     {   
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        glLoadIdentity();   
-        drawText(width / 2 - 10, height/2, winner?"Winner is Left":"Winner is Right"); 
-        drawText(width / 2 - 10, height/2-10, winner?"Winner is Left":"Winner is Right"); 
-        drawText(width / 2 - 10, height/2-20, winner?"Winner is Left":"Winner is Right"); 
+        glLoadIdentity(); 
+        string s1 = "PING PONG GAME in OpenGL";
+        string s2 = "Controls:\nPlayer Left: W and S\nPlayer Right: UP and DOWN\nBall Speed: N and M";
+        string s3 = "Press any Key to start...";
+        drawText(width / 2 - 90, height/2+20, s1); 
+        drawText(width / 2 - 90, height/2, s2); 
+        drawText(width / 2 - 90, height/2-60, s3); 
         glutSwapBuffers();
     }
     else if(SCREEN_FLOW == 1)
