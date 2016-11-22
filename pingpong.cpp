@@ -32,13 +32,16 @@ float racket_left_y = 50.0f;
 // right racket position
 float racket_right_x = width - racket_width - 10;
 float racket_right_y = 50;
-
+int MAX_SCORE = 2   ;
 float ball_pos_x = width / 2;
 float ball_pos_y = height / 2;
 float ball_dir_x = -1.0f;
 float ball_dir_y = 0.0f;
 int ball_size = 8;
 int ball_speed = 5;
+
+bool winner;
+bool PLAYING = true;
 
 string int2str(int x) 
 {
@@ -71,21 +74,35 @@ void initial()
     gluOrtho2D(0.0,30.0,0.0,30.0);
 }
 
+void game_reset(){
+    PLAYING = true;
+    score_right = 0;
+    score_left = 0;
+}
+
 void draw()
 {
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glLoadIdentity();
+    if(PLAYING)
+    {
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glLoadIdentity();
 
+        // ToDo: draw our scene
+        drawRect(racket_left_x, racket_left_y, racket_width, racket_height);
+        drawRect(racket_right_x, racket_right_y, racket_width, racket_height);
+        drawRect(ball_pos_x - ball_size / 2, ball_pos_y - ball_size / 2, ball_size, ball_size);
+        // draw score
+        drawText(width / 2 - 10, height - 15, int2str(score_left) + ":" + int2str(score_right)); 
 
-    // ToDo: draw our scene
-    drawRect(racket_left_x, racket_left_y, racket_width, racket_height);
-    drawRect(racket_right_x, racket_right_y, racket_width, racket_height);
-    drawRect(ball_pos_x - ball_size / 2, ball_pos_y - ball_size / 2, ball_size, ball_size);
-    // draw score
-    drawText(width / 2 - 10, height - 15, int2str(score_left) + ":" + int2str(score_right)); 
-
-    // swap buffers (has to be done at the end)
-    glutSwapBuffers();
+        // swap buffers (has to be done at the end)
+        glutSwapBuffers();
+    }
+    else{
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glLoadIdentity();   
+        drawText(width / 2 - 10, height/2, winner?"Winner is Left":"Winner is Right"); 
+        glutSwapBuffers();
+    }
 }
 
 void vec2_norm(float& x, float &y) 
@@ -103,34 +120,26 @@ void vec2_norm(float& x, float &y)
 void keyboard(unsigned char k, int x, int y) 
 {
     // printf("%c %d %d\n", k,x,y);
-    switch(k) 
+    if(!PLAYING) game_reset();
+    switch(k)  
     {
-        case 'w'     : racket_left_y += racket_speed;   break;
-        case 's'     : racket_left_y -= racket_speed;    break;
+        case 'w'     : if(racket_left_y + racket_height < height) racket_left_y += racket_speed;   break;
+        case 's'     : if(racket_left_y > 0)  racket_left_y -= racket_speed;    break;
         // case 'i'     : racket_right_y += racket_speed;  break;
         // case 'k'     : racket_right_y -= racket_speed;  break;
     }
 }
 void special_keyboard(int k, int x, int y){
     // printf("%d %d %d\n", k,x,y);
+    if(!PLAYING) game_reset();
     switch(k) 
     {
-        case GLUT_KEY_UP      : racket_right_y += racket_speed;       break;
-        case GLUT_KEY_DOWN    : racket_right_y -= racket_speed;    break;
+        case GLUT_KEY_UP      : if(racket_right_y + racket_height < height) racket_right_y += racket_speed;       break;
+        case GLUT_KEY_DOWN    : if(racket_right_y > 0) racket_right_y -= racket_speed;    break;
         // case GLUT_KEY_RIGHT   : printf("GLUT_KEY_UP %d\n",k);       break;
         // case GLUT_KEY_LEFT    : printf("GLUT_KEY_DOWN %d\n",k);     break;
     }
 }
-// void keyboard() 
-// {
-//     // left racket
-//     // if (glfwGetKey( VK_W ) == GLFW_PRESS) racket_left_y += racket_speed;
-//     // if (glfwGetKey( VK_S ) == GLFW_PRESS) racket_left_y -= racket_speed;
-    
-//     // right racket
-//     // if (GetAsyncKeyState(VK_UP)) racket_right_y += racket_speed;
-//     // if (GetAsyncKeyState(VK_DOWN)) racket_right_y -= racket_speed;
-// }
 
 void updateBall() 
 {
@@ -195,17 +204,32 @@ void updateBall()
 }
 
 
+void draw2(){
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glLoadIdentity();
+
+    // draw score
+    drawText(width / 2 - 10, height - 15, winner?"winner is Left":"winner is right"); 
+
+    // swap buffers (has to be done at the end)
+    glutSwapBuffers();
+}
+
+
 void update(int value) 
 {
-    // input handling
-    // keyboard();
-
     // update ball
-    updateBall();
+    if(PLAYING) updateBall();
 
     // Call update() again in 'interval' milliseconds
     glutTimerFunc(interval, update, 0);
 
+    if(score_left==MAX_SCORE || score_right==MAX_SCORE)
+    {
+        PLAYING = false;
+        if(score_right == MAX_SCORE) winner=false;
+        else winner = true;
+    }
     // Redisplay frame
     glutPostRedisplay();
 }
