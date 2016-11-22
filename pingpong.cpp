@@ -27,11 +27,11 @@ int racket_speed = 10;
 
 // left racket position
 float racket_left_x = 10.0f;
-float racket_left_y = 50.0f;
+float racket_left_y = height/2 - racket_height/2;
 
 // right racket position
 float racket_right_x = width - racket_width - 10;
-float racket_right_y = 50;
+float racket_right_y = height/2 - racket_height/2;
 int MAX_SCORE = 2   ;
 float ball_pos_x = width / 2;
 float ball_pos_y = height / 2;
@@ -78,6 +78,15 @@ void game_reset(){
     SCREEN_FLOW = 1;
     score_right = 0;
     score_left = 0;
+
+    racket_left_x = 10.0f;
+    racket_left_y = height/2 - racket_height/2;
+
+    racket_right_x = width - racket_width - 10;
+    racket_right_y = height/2 - racket_height/2;
+
+    ball_pos_x = width / 2;
+    ball_pos_y = height / 2;
 }
 
 void draw()
@@ -107,13 +116,15 @@ void draw()
         // draw score
         drawText(width / 2 - 10, height - 15, int2str(score_left) + ":" + int2str(score_right)); 
 
+        drawText(width / 2 - 50, 15, "Ball Speed: " + int2str(ball_speed)); 
         // swap buffers (has to be done at the end)
         glutSwapBuffers();
     }
     else if(SCREEN_FLOW == 2){
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glLoadIdentity();   
-        drawText(width / 2 - 10, height/2, winner?"Winner is Left":"Winner is Right"); 
+        drawText(width / 2 - 90, height/2, winner?"Winner is Left":"Winner is Right"); 
+        drawText(width / 2 - 90, height/2-20, "Press any Key to Restart..."); 
         glutSwapBuffers();
     }
 }
@@ -138,6 +149,8 @@ void keyboard(unsigned char k, int x, int y)
     {
         case 'w'     : if(racket_left_y + racket_height < height) racket_left_y += racket_speed;   break;
         case 's'     : if(racket_left_y > 0)  racket_left_y -= racket_speed;    break;
+        case 'n'     : if(ball_speed>1) ball_speed--;    break;
+        case 'm'     : if(ball_speed<8) ball_speed++;    break;
     }
 }
 void special_keyboard(int k, int x, int y){
