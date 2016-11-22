@@ -14,8 +14,8 @@ using namespace std;
 #define VK_W 0x57
 #define VK_S 0x53
 
-int width = 2000;
-int height = 800;
+int width = 1000;
+int height = 400;
 int interval=1000/60;
 
 int score_left = 0;
@@ -23,7 +23,7 @@ int score_right = 0;
 
 int racket_width = 10;
 int racket_height = 80;
-int racket_speed = 3;
+int racket_speed = 10;
 
 // left racket position
 float racket_left_x = 10.0f;
@@ -38,7 +38,7 @@ float ball_pos_y = height / 2;
 float ball_dir_x = -1.0f;
 float ball_dir_y = 0.0f;
 int ball_size = 8;
-int ball_speed = 2;
+int ball_speed = 5;
 
 string int2str(int x) 
 {
@@ -66,14 +66,14 @@ void drawText(float x, float y, std::string text)
 
 void initial()
 {
-	glClearColor(1.0,1.0,1.0,0.0);
+    glClearColor(1.0,1.0,1.0,0.0);
     glMatrixMode(GL_PROJECTION);
     gluOrtho2D(0.0,30.0,0.0,30.0);
 }
 
 void draw()
 {
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glLoadIdentity();
 
 
@@ -197,17 +197,17 @@ void updateBall()
 
 void update(int value) 
 {
-	// input handling
-	// keyboard();
+    // input handling
+    // keyboard();
 
-	// update ball
-   	updateBall();
+    // update ball
+    updateBall();
 
-	// Call update() again in 'interval' milliseconds
-	glutTimerFunc(interval, update, 0);
+    // Call update() again in 'interval' milliseconds
+    glutTimerFunc(interval, update, 0);
 
-	// Redisplay frame
-	glutPostRedisplay();
+    // Redisplay frame
+    glutPostRedisplay();
 }
 
 void enable2D(int width, int height) 
@@ -222,22 +222,22 @@ void enable2D(int width, int height)
 
 int main(int argc, char** argv)
 {
-	// glutInit(&argc, argv);    
-	// glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB);             // Initialize GLUT
-	// glutInitWindowPosition(200, 100); // Position the window's initial top-left corner
-	// glutInitWindowSize(640, 480);   // Set the window's initial width & height
-	// glutCreateWindow("Ping Pong Game"); // Create a window with the given title
-	// initial();
-	// glutDisplayFunc(draw); // Register display callback handler for window re-paint
-	// glutTimerFunc(interval, update, 0);
-	// glutMainLoop();           // Enter the infinitely event-processing loop
+    // glutInit(&argc, argv);    
+    // glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB);             // Initialize GLUT
+    // glutInitWindowPosition(200, 100); // Position the window's initial top-left corner
+    // glutInitWindowSize(640, 480);   // Set the window's initial width & height
+    // glutCreateWindow("Ping Pong Game"); // Create a window with the given title
+    // initial();
+    // glutDisplayFunc(draw); // Register display callback handler for window re-paint
+    // glutTimerFunc(interval, update, 0);
+    // glutMainLoop();           // Enter the infinitely event-processing loop
 
 
-	glutInit(&argc, argv);
+    glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
     glutInitWindowPosition(200, 100); 
     glutInitWindowSize(width, height);
-    glutCreateWindow("noobtuts.com Pong");
+    glutCreateWindow("Ping Pong Game");
 
     // Register callback functions   
     glutDisplayFunc(draw);
@@ -251,6 +251,6 @@ int main(int argc, char** argv)
 
     // start the whole thing
     glutMainLoop();
-	return 0;
+    return 0;
 }
 
