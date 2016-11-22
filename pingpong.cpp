@@ -7,7 +7,7 @@
 #include <sstream> 
 #include "GL/freeglut.h"
 
-#include "scanconvertcircle.c"
+#include "circle_utils.cpp"
 
 using namespace std;
 
@@ -32,7 +32,7 @@ float racket_left_y = height/2 - racket_height/2;
 // right racket position
 float racket_right_x = width - racket_width - 10;
 float racket_right_y = height/2 - racket_height/2;
-int MAX_SCORE = 2   ;
+int MAX_SCORE = 10;
 float ball_pos_x = width / 2;
 float ball_pos_y = height / 2;
 float ball_dir_x = -1.0f;

@@ -1,5 +1,6 @@
 ## Running The Game through:
 
 ```shell
-gcc pingponglikegame.c -lGL -lGLU -lglut
+g++ pingpong.cpp -lGL -lGLU -lglut
+./a.out
 ```
