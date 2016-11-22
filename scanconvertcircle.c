@@ -1,6 +1,3 @@
-#include <stdio.h>
-#include <GL/glut.h>
-
 const int SCREEN_WIDTH = 1000;
 
 void edgedetect(int x, int y, int xC, int yC, int* le, int* re)

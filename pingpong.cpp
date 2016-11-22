@@ -101,6 +101,7 @@ void draw()
         drawText(width / 2 - 90, height/2+20, s1); 
         drawText(width / 2 - 90, height/2, s2); 
         drawText(width / 2 - 90, height/2-60, s3); 
+
         glutSwapBuffers();
     }
     else if(SCREEN_FLOW == 1)
@@ -169,8 +170,7 @@ void updateBall()
     ball_pos_y += ball_dir_y * ball_speed;
     
     // hit by left racket?
-    if (ball_pos_x < racket_left_x + racket_width && 
-        ball_pos_x > racket_left_x &&
+    if (ball_pos_x - ball_size < racket_left_x + racket_width && 
         ball_pos_y < racket_left_y + racket_height &&
         ball_pos_y > racket_left_y) {
         // set fly direction depending on where it hit the racket
@@ -181,8 +181,7 @@ void updateBall()
     }
     
     // hit by right racket?
-    if (ball_pos_x > racket_right_x && 
-        ball_pos_x < racket_right_x + racket_width &&
+    if (ball_pos_x + ball_size > racket_right_x && 
         ball_pos_y < racket_right_y + racket_height &&
         ball_pos_y > racket_right_y) {
         // set fly direction depending on where it hit the racket
@@ -211,12 +210,12 @@ void updateBall()
     }
 
     // hit top wall?
-    if (ball_pos_y > height) {
+    if (ball_pos_y + ball_size > height) {
         ball_dir_y = -fabs(ball_dir_y); // force it to be negative
     }
 
     // hit bottom wall?
-    if (ball_pos_y < 0) {
+    if (ball_pos_y - ball_size < 0) {
         ball_dir_y = fabs(ball_dir_y); // force it to be positive
     }
 
