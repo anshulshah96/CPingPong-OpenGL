@@ -1,4 +1,4 @@
-const int SCREEN_WIDTH = 1000;
+const int SCREEN_HEIGHT = 1000;
 
 void edgedetect(int x, int y, int xC, int yC, int* le, int* re)
 {
@@ -64,17 +64,19 @@ void Circle(int Radius, int xC, int yC, int le[], int re[])
 {
     int P;
     int x, y;
-    void Draw(int x, int y, int xC, int yC);
     P = 1 - Radius;
     x = 0;
     y = Radius;
     edgedetect(x, y, xC, yC, le, re);
-    while (x <= y) {
+    while (x <= y) 
+    {
         x++;
-        if (P < 0) {
+        if (P < 0) 
+        {
             P += 2 * x + 1;
         }
-        else {
+        else 
+        {
             P += 2 * (x - y) + 1;
             y--;
         }
@@ -83,18 +85,18 @@ void Circle(int Radius, int xC, int yC, int le[], int re[])
 }
 void scanfill(int x1, int y1, int r)
 {
-    int le[SCREEN_WIDTH], re[SCREEN_WIDTH];
+    int le[SCREEN_HEIGHT], re[SCREEN_HEIGHT];
     int i, y;
-    for (i = 0; i < SCREEN_WIDTH; i++) // initialize le and re array values
+    for (i = 0; i < SCREEN_HEIGHT; i++) 
     {
-        le[i] = SCREEN_WIDTH;
+        le[i] = SCREEN_HEIGHT;
         re[i] = 0;
     }
     Circle(r, x1, y1, le, re);
-    for (y = 0; y < SCREEN_WIDTH; y++) // for every scan line with value y
+    for (y = 0; y < SCREEN_HEIGHT; y++) // for every scan line with value y
     {
-        if (le[y] <= re[y]) // refer to le and re arrays to see if a part
-            for (i = le[y] + 1; i < re[y]; i++) // of the scanline is inside polygon
-                drawpixel(i, y); // if so draw a horizontal line from
-    } // left edge to right edge
+        if (le[y] <= re[y]) 
+            for (i = le[y] + 1; i < re[y]; i++) 
+                drawpixel(i, y); 
+    } 
 }

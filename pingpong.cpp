@@ -54,10 +54,10 @@ string int2str(int x)
 void drawRect(float x, float y, float width, float height) 
 {
     glBegin(GL_QUADS);
-        glVertex2f(x, y);
-        glVertex2f(x + width, y);
-        glVertex2f(x + width, y + height);
-        glVertex2f(x, y + height);
+    glVertex2f(x, y);
+    glVertex2f(x + width, y);
+    glVertex2f(x + width, y + height);
+    glVertex2f(x, y + height);
     glEnd();
 }
 
@@ -74,7 +74,8 @@ void initial()
     gluOrtho2D(0.0,30.0,0.0,30.0);
 }
 
-void game_reset(){
+void game_reset()
+{
     SCREEN_FLOW = 1;
     score_right = 0;
     score_left = 0;
@@ -91,48 +92,44 @@ void game_reset(){
 
 void draw()
 {
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glLoadIdentity();
+
     if(SCREEN_FLOW == 0)
-    {   
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        glLoadIdentity(); 
+    {  
         string s1 = "PING PONG GAME in OpenGL";
         string s2 = "Controls:\nPlayer Left: W and S\nPlayer Right: UP and DOWN\nBall Speed: N and M";
         string s3 = "Press any Key to start...";
         drawText(width / 2 - 90, height/2+20, s1); 
         drawText(width / 2 - 90, height/2, s2); 
         drawText(width / 2 - 90, height/2-60, s3); 
-
-        glutSwapBuffers();
     }
     else if(SCREEN_FLOW == 1)
     {
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        glLoadIdentity();
-
-        // ToDo: draw our scene
+        // Draw Paddles
         drawRect(racket_left_x, racket_left_y, racket_width, racket_height);
         drawRect(racket_right_x, racket_right_y, racket_width, racket_height);
-        // drawRect(ball_pos_x - ball_size / 2, ball_pos_y - ball_size / 2, ball_size, ball_size);
+        
+        //Draw Ball
         scanfill(ball_pos_x,ball_pos_y,ball_size);
-        // draw score
+
+        // Draw score
         drawText(width / 2 - 10, height - 15, int2str(score_left) + ":" + int2str(score_right)); 
 
         drawText(width / 2 - 50, 15, "Ball Speed: " + int2str(ball_speed)); 
-        // swap buffers (has to be done at the end)
-        glutSwapBuffers();
     }
-    else if(SCREEN_FLOW == 2){
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        glLoadIdentity();   
+    else if(SCREEN_FLOW == 2)
+    {
         drawText(width / 2 - 90, height/2, winner?"Winner is Left":"Winner is Right"); 
         drawText(width / 2 - 90, height/2-20, "Press any Key to Restart..."); 
-        glutSwapBuffers();
     }
+
+    glutSwapBuffers();
 }
 
 void vec2_norm(float& x, float &y) 
 {
-    // sets a vectors length to 1 (which means that x + y == 1)
+    // sets a vectors length to 1 (which means that x^2 + y^2 == 1)
     float length = sqrt((x * x) + (y * y));
     if (length != 0.0f) 
     {
@@ -144,18 +141,17 @@ void vec2_norm(float& x, float &y)
 
 void keyboard(unsigned char k, int x, int y) 
 {
-    // printf("%c %d %d\n", k,x,y);
     if(SCREEN_FLOW != 1) game_reset();
     switch(k)  
     {
         case 'w'     : if(racket_left_y + racket_height < height) racket_left_y += racket_speed;   break;
         case 's'     : if(racket_left_y > 0)  racket_left_y -= racket_speed;    break;
-        case 'n'     : if(ball_speed>1) ball_speed--;    break;
-        case 'm'     : if(ball_speed<8) ball_speed++;    break;
+        case 'n'     : if(ball_speed>1) {ball_speed--;racket_speed--;}    break;
+        case 'm'     : if(ball_speed<12) {ball_speed++;racket_speed++;}    break;
     }
 }
-void special_keyboard(int k, int x, int y){
-    // printf("%d %d %d\n", k,x,y);
+void special_keyboard(int k, int x, int y)
+{
     if(SCREEN_FLOW != 1) game_reset();
     switch(k) 
     {
@@ -163,60 +159,61 @@ void special_keyboard(int k, int x, int y){
         case GLUT_KEY_DOWN    : if(racket_right_y > 0) racket_right_y -= racket_speed;    break;
     }
 }
+
 void updateBall() 
 {
-    // fly a bit
     ball_pos_x += ball_dir_x * ball_speed;
     ball_pos_y += ball_dir_y * ball_speed;
     
-    // hit by left racket?
+    // hit by left racket
     if (ball_pos_x - ball_size < racket_left_x + racket_width && 
-        ball_pos_y < racket_left_y + racket_height &&
-        ball_pos_y > racket_left_y) {
-        // set fly direction depending on where it hit the racket
-        // (t is 0.5 if hit at top, 0 at center, -0.5 at bottom)
+        ball_pos_y < racket_left_y + racket_height && ball_pos_y > racket_left_y) 
+    {
         float t = ((ball_pos_y - racket_left_y) / racket_height) - 0.5f;
-        ball_dir_x = fabs(ball_dir_x); // force it to be positive
+        // (t is 0.5 if hit at top, 0 at center, -0.5 at bottom)
+        ball_dir_x = fabs(ball_dir_x);
         ball_dir_y = t;
     }
     
-    // hit by right racket?
+    // hit by right racket
     if (ball_pos_x + ball_size > racket_right_x && 
-        ball_pos_y < racket_right_y + racket_height &&
-        ball_pos_y > racket_right_y) {
-        // set fly direction depending on where it hit the racket
-        // (t is 0.5 if hit at top, 0 at center, -0.5 at bottom)
+        ball_pos_y < racket_right_y + racket_height && ball_pos_y > racket_right_y) 
+    {
         float t = ((ball_pos_y - racket_right_y) / racket_height) - 0.5f;
-        ball_dir_x = -fabs(ball_dir_x); // force it to be negative
+        ball_dir_x = -fabs(ball_dir_x); 
         ball_dir_y = t;
     }
 
-    // hit left wall?
-    if (ball_pos_x < 0) {
+    // hit left wall
+    if (ball_pos_x < 0) 
+    {
         ++score_right;
         ball_pos_x = width / 2;
         ball_pos_y = height / 2;
-        ball_dir_x = fabs(ball_dir_x); // force it to be positive
+        ball_dir_x = fabs(ball_dir_x);
         ball_dir_y = 0;
     }
 
-    // hit right wall?
-    if (ball_pos_x > width) {
+    // hit right wall
+    if (ball_pos_x > width) 
+    {
         ++score_left;
         ball_pos_x = width / 2;
         ball_pos_y = height / 2;
-        ball_dir_x = -fabs(ball_dir_x); // force it to be negative
+        ball_dir_x = -fabs(ball_dir_x);
         ball_dir_y = 0;
     }
 
-    // hit top wall?
-    if (ball_pos_y + ball_size > height) {
-        ball_dir_y = -fabs(ball_dir_y); // force it to be negative
+    // hit top wall
+    if (ball_pos_y + ball_size > height) 
+    {
+        ball_dir_y = -fabs(ball_dir_y);
     }
 
-    // hit bottom wall?
-    if (ball_pos_y - ball_size < 0) {
-        ball_dir_y = fabs(ball_dir_y); // force it to be positive
+    // hit bottom wall
+    if (ball_pos_y - ball_size < 0) 
+    {
+        ball_dir_y = fabs(ball_dir_y); 
     }
 
     // make sure that length of dir stays at 1
@@ -225,7 +222,6 @@ void updateBall()
 
 void update(int value) 
 {
-    // update ball
     if(SCREEN_FLOW == 1) updateBall();
 
     // Call update() again in 'interval' milliseconds
@@ -237,7 +233,7 @@ void update(int value)
         if(score_right == MAX_SCORE) winner=false;
         else winner = true;
     }
-    // Redisplay frame
+
     glutPostRedisplay();
 }
 
@@ -264,8 +260,9 @@ int main(int argc, char** argv)
     glutTimerFunc(interval, update, 0);
 
     enable2D(width, height);
-    glColor3f(1.0f, 1.0f, 1.0f);
+    glColor3f(0.75f, 0.75f, 0.75f);
 
+    // Register keyboard callback functions
     glutKeyboardFunc(keyboard);
     glutSpecialFunc(special_keyboard);
 
